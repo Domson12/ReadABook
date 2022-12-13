@@ -2,6 +2,7 @@ package eu.tuto.readabook.screens.login
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,27 +31,61 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import eu.tuto.readabook.components.ReadLogo
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
 import com.google.api.LogDescriptor
+import eu.tuto.readabook.R
 import eu.tuto.readabook.components.EmailInput
 import eu.tuto.readabook.components.PasswordInput
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    val showLoginForm = rememberSaveable() { mutableStateOf(true) }
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             ReadLogo()
-            UserForm(
-                loading = false,
-                isCreateAccount = false
-            ) { email, password ->
-                Log.d("Form", "LoginScreen: $email $password")
+            if (showLoginForm.value) {
+                UserForm(
+                    loading = false,
+                    isCreateAccount = false
+                ) { email, password ->
+                    //Todo: Create FB login
+                }
+            } else {
+                UserForm(
+                    loading = false,
+                    isCreateAccount = true
+                ) { email, password ->
+                    //Todo: Create FB account
+                }
             }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        Row(
+            modifier = Modifier.padding(15.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val text = if (showLoginForm.value) {
+                "Sign up"
+            } else {
+                "Login"
+            }
+            Text(text = "New User?")
+            Text(
+                text, modifier = Modifier
+                    .clickable {
+                        showLoginForm.value = !showLoginForm.value
+                    }
+                    .padding(start = 5.dp),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.secondaryVariant
+            )
         }
     }
 }
@@ -77,6 +113,10 @@ fun UserForm(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (isCreateAccount) Text(
+            text = stringResource(id = R.string.create_acct),
+            modifier = Modifier.padding(4.dp)
+        ) else Text(text = "")
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
             passwdFocusRequest.requestFocus()
         })
@@ -95,6 +135,7 @@ fun UserForm(
             validInputs = valid,
         ) {
             onDone(email.value.trim(), password.value.trim())
+            keyboardController?.hide()
         }
     }
 }
