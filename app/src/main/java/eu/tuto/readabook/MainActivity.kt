@@ -46,10 +46,3 @@ fun ReadABookApp() {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ReadABookTheme {
-    }
-}
