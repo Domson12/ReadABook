@@ -39,9 +39,9 @@ fun SplashScreen(navController: NavController) {
             })
         )
         delay(1000L)
-        if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
             navController.navigate(ReadScreens.LoginScreen.name)
-        }else {
+        } else {
             navController.navigate(ReadScreens.HomeScreen.name)
         }
     }
