@@ -2,7 +2,9 @@ package eu.tuto.readabook.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -348,4 +350,31 @@ fun RoundedButton(label: String, radius: Int, onPress: () -> Unit) {
             Text(text = label, style = TextStyle(color = Color.White, fontSize = 15.sp))
         }
     }
+}
+@Composable
+fun BookListArea(listOfBooks: List<MBook>, navController: NavController) {
+    HorizontalScrollableComponent(listOfBooks){
+        //TODO: on card clicked go to details
+    }
+}
+
+@Composable
+fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (String) -> Unit) {
+    val scrollState = rememberScrollState()
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(280.dp)
+        .horizontalScroll(scrollState)) {
+        for (book in listOfBooks) {
+            ListCard(book) {
+                onCardPressed(it)
+            }
+        }
+    }
+}
+
+@Composable
+fun ReadingNowArea(books: List<MBook>, navController: NavController) {
+    ListCard()
 }

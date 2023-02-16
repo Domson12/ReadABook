@@ -1,7 +1,8 @@
 package eu.tuto.readabook.screens.login
 
+import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.MutableState
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,8 +12,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import eu.tuto.readabook.model.MUser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class LoginScreenViewModel : ViewModel() {
@@ -39,9 +38,17 @@ class LoginScreenViewModel : ViewModel() {
             }
         }
 
-    fun createUserWithEmailAndPassword(email: String, password: String, home: () -> Unit) {
+    fun createUserWithEmailAndPassword(
+        email: String,
+        password: String,
+        context: Context,
+        home: () -> Unit
+    ) {
+
         if (_loading.value == false) {
             _loading.value = true
+
+
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -50,12 +57,19 @@ class LoginScreenViewModel : ViewModel() {
                         home()
                         Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
                     } else {
-                        Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
+                        Toast.makeText(
+                            context,
+                            "Oops...Something went wrong! Check your credentials",
+                            Toast.LENGTH_LONG
+                        ).show()
+
                     }
                     _loading.value = false
                 }
+
         }
     }
+
 
     private fun createUser(displayName: String?) {
         val userId = auth.currentUser?.uid

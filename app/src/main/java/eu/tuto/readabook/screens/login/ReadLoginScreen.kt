@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package eu.tuto.readabook.screens.login
 
 import androidx.compose.foundation.background
@@ -17,6 +19,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +36,7 @@ import eu.tuto.readabook.navigation.ReadScreens
 @Composable
 fun LoginScreen(navController: NavHostController, viewModel: LoginScreenViewModel = viewModel()) {
     val showLoginForm = rememberSaveable() { mutableStateOf(true) }
+    val context = LocalContext.current
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,7 +57,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginScreenViewMode
                     loading = false,
                     isCreateAccount = true
                 ) { email, password ->
-                    viewModel.createUserWithEmailAndPassword(email, password) {
+                    viewModel.createUserWithEmailAndPassword(email, password, context) {
                         navController.navigate(ReadScreens.HomeScreen.name)
                     }
                 }

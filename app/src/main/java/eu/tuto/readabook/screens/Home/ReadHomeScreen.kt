@@ -2,9 +2,7 @@ package eu.tuto.readabook.screens.Home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -29,7 +27,9 @@ fun HomeScreen(navController: NavHostController) {
     Scaffold(topBar = {
         ReaderAppBar(title = "ReadABook", navController = navController)
     }, floatingActionButton = {
-        FABContent {}
+        FABContent {
+            navController.navigate(ReadScreens.SearchScreen.name)
+        }
     }) {
         Surface(modifier = Modifier.fillMaxSize()) {
             HomeContent(navController)
@@ -90,30 +90,3 @@ fun HomeContent(navController: NavController) {
     }
 }
 
-@Composable
-fun BookListArea(listOfBooks: List<MBook>, navController: NavController) {
-    HorizontalScrollableComponent(listOfBooks){
-        //TODO: on card clicked go to details
-    }
-}
-
-@Composable
-fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (String) -> Unit) {
-    val scrollState = rememberScrollState()
-
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .heightIn(280.dp)
-        .horizontalScroll(scrollState)) {
-        for (book in listOfBooks) {
-            ListCard(book) {
-                onCardPressed(it)
-            }
-        }
-    }
-}
-
-@Composable
-fun ReadingNowArea(books: List<MBook>, navController: NavController) {
-    ListCard()
-}
