@@ -351,9 +351,10 @@ fun RoundedButton(label: String, radius: Int, onPress: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun BookListArea(listOfBooks: List<MBook>, navController: NavController) {
-    HorizontalScrollableComponent(listOfBooks){
+    HorizontalScrollableComponent(listOfBooks) {
         //TODO: on card clicked go to details
     }
 }
@@ -362,10 +363,12 @@ fun BookListArea(listOfBooks: List<MBook>, navController: NavController) {
 fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (String) -> Unit) {
     val scrollState = rememberScrollState()
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .heightIn(280.dp)
-        .horizontalScroll(scrollState)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(280.dp)
+            .horizontalScroll(scrollState)
+    ) {
         for (book in listOfBooks) {
             ListCard(book) {
                 onCardPressed(it)
