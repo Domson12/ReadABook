@@ -22,12 +22,13 @@ class SearchViewModel @Inject constructor(private val repository: BookRepository
     }
 
     fun searchBooks(query: String) {
+
         viewModelScope.launch(Dispatchers.IO) {
             if (query.isEmpty()) {
                 return@launch
             }
 
-            listOfBooks.value.loading = true
+            //listOfBooks.value.loading = true
             listOfBooks.value = repository.getBooks(query)
 
             if (listOfBooks.value.data.toString().isNotEmpty()) {

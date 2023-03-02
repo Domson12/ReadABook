@@ -21,7 +21,12 @@ class LoginScreenViewModel : ViewModel() {
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
 
-    fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit) =
+    fun signInWithEmailAndPassword(
+        email: String,
+        password: String,
+        context: Context,
+        home: () -> Unit
+    ) =
         viewModelScope.launch {
             try {
                 auth.signInWithEmailAndPassword(email, password)
@@ -30,7 +35,11 @@ class LoginScreenViewModel : ViewModel() {
                             Log.d("FB", "signInWithEmailAndPassword: ${task.result}")
                             home()
                         } else {
-                            Log.d("FB", "signInWithEmailAndPassword: ${task.result}")
+                            Toast.makeText(
+                                context,
+                                "Login failed! Check your email and password.",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
             } catch (e: Exception) {

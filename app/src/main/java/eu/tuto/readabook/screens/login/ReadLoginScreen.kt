@@ -48,7 +48,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginScreenViewMode
                     loading = false,
                     isCreateAccount = false
                 ) { email, password ->
-                    viewModel.signInWithEmailAndPassword(email, password) {
+                    viewModel.signInWithEmailAndPassword(email, password, context) {
                         navController.navigate(ReadScreens.HomeScreen.name)
                     }
                 }

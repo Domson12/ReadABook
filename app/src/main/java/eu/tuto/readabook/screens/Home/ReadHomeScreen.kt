@@ -74,7 +74,7 @@ fun HomeContent(navController: NavController) {
                     text = currentUserName!!,
                     modifier = Modifier.padding(2.dp),
                     style = MaterialTheme.typography.overline,
-                    color = Color.Red,
+                    color = Color.Gray,
                     fontSize = 15.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Clip

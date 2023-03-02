@@ -17,9 +17,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideBookRepository(api: BooksApi) {
-        BookRepository(api)
-    }
+    fun provideBookRepository(api: BooksApi) = BookRepository(api)
+
 
     @Singleton
     @Provides

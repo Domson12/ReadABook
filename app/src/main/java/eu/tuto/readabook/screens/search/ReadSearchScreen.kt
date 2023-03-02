@@ -30,10 +30,11 @@ import eu.tuto.readabook.components.ReaderAppBar
 import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun SearchScreen(navController: NavController, viewModel: SearchViewModel = viewModel()) {
+fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hiltViewModel()) {
     Scaffold(topBar = {
         ReaderAppBar(
             title = "Search Books",
@@ -46,18 +47,21 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = view
     }) {
         Surface {
             Column() {
-                SearchForm(
-                    navController = navController, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    viewModel = viewModel
-                ) {query ->
-                    viewModel.searchBooks(query)
-
+                Row() {
+                    SearchForm(
+                        navController = navController, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        viewModel = viewModel
+                    ) { query ->
+                        viewModel.searchBooks(query)
+                    }
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+                Row() {
+                    BookList(navController = navController)
                 }
             }
-            Spacer(modifier = Modifier.height(13.dp))
-            BookList(navController = navController)
         }
     }
 

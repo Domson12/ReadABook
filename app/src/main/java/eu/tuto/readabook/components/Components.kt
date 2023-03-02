@@ -44,7 +44,7 @@ fun ReadLogo(modifier: Modifier = Modifier) {
         text = "ReadABook",
         modifier = modifier.padding(bottom = 16.dp),
         style = MaterialTheme.typography.h3,
-        color = Color.Red.copy(alpha = 0.5f)
+        color = Color.Gray.copy(alpha = 0.5f)
     )
 }
 
@@ -242,7 +242,7 @@ fun ReaderAppBar(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (showProfile) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
+                        imageVector = Icons.Default.StarBorder,
                         contentDescription = "Logo Icon",
                         modifier = Modifier
                             .clip(
@@ -255,7 +255,7 @@ fun ReaderAppBar(
                     Icon(
                         imageVector = icon,
                         contentDescription = "arrow back",
-                        tint = Color.Red.copy(alpha = 0.7f),
+                        tint = Color.Gray.copy(alpha = 0.7f),
                         modifier = Modifier.clickable { onBackArrowClicked.invoke() }
                     )
 
@@ -263,7 +263,7 @@ fun ReaderAppBar(
                 Spacer(modifier = Modifier.width(40.dp))
                 Text(
                     text = title,
-                    color = Color.Red.copy(alpha = 0.7f),
+                    color = Color.Gray.copy(alpha = 0.7f),
                     style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 )
             }
@@ -277,7 +277,7 @@ fun ReaderAppBar(
                 if (showProfile) {
                     Icon(
                         imageVector = Icons.Filled.Logout, contentDescription = "Logout",
-                        tint = Color.Green.copy(alpha = 0.4f)
+                        tint = Color.Gray.copy(alpha = 0.4f)
                     )
                 } else {
                     Box(modifier = Modifier)
