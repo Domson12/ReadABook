@@ -27,6 +27,7 @@ import eu.tuto.readabook.components.ReaderAppBar
 import eu.tuto.readabook.navigation.ReadScreens
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import eu.tuto.readabook.components.LoadingIndicator
 import eu.tuto.readabook.model.Item
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -77,14 +78,7 @@ fun BookList(
 
     val listOfBooks = viewModel.list
     if (viewModel.isLoading) {
-        Row(
-            modifier = Modifier.padding(end = 2.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LinearProgressIndicator()
-            Text(text = "Loading...")
-        }
+        LoadingIndicator(text = "Loading...")
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -105,7 +99,7 @@ fun BookRow(
 ) {
     Card(modifier = Modifier
         .clickable {
-            navController.navigate(ReadScreens.DetailScreen.name)
+            navController.navigate(ReadScreens.DetailScreen.name + "/${book?.id}")
         }
         .fillMaxWidth()
         .height(100.dp)

@@ -1,26 +1,33 @@
 package eu.tuto.readabook.screens.details
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import eu.tuto.readabook.components.LoadingIndicator
 import eu.tuto.readabook.components.ReaderAppBar
+import eu.tuto.readabook.data.Resource
+import eu.tuto.readabook.model.Item
 import eu.tuto.readabook.navigation.ReadScreens
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun BookDetailsScreen(navController: NavHostController, bookId: String) {
+fun BookDetailsScreen(
+    navController: NavHostController,
+    bookId: String,
+    viewModel: DetailsViewModel = hiltViewModel()
+) {
     Scaffold(topBar = {
         ReaderAppBar(
             title = "Book Details",
@@ -41,8 +48,56 @@ fun BookDetailsScreen(navController: NavHostController, bookId: String) {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Book Description")
+                val bookInfo = produceState<Resource<Item>>(initialValue = Resource.Loading()) {
+                    value = viewModel.getBookInfo(bookId)
+                }.value
+
+                if (bookInfo.data == null) {
+                    LoadingIndicator(text = "Loading...")
+                } else {
+                    ShowBookDetails(bookInfo, navController)
+                }
             }
         }
     }
+}
+
+@Composable
+fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavHostController) {
+    val bookData = bookInfo.data?.volumeInfo
+    val googleBookId = bookInfo.data?.id
+
+    Card(
+        modifier = Modifier.padding(34.dp),
+        shape = CircleShape, elevation = 4.dp
+    ) {
+        AsyncImage(
+            model = bookData!!.imageLinks.thumbnail, contentDescription = "Book Image",
+            modifier = Modifier
+                .width(90.dp)
+                .height(90.dp)
+                .padding(1.dp)
+        )
+    }
+    bookData?.title?.let {
+        Text(
+            text = it,
+            style = MaterialTheme.typography.h6,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 19
+        )
+    }
+    Text(text = "Authors: ${bookData?.authors.toString()}")
+    Text(text = "Page Count: ${bookData?.pageCount.toString()}")
+    Text(
+        text = "Categories: ${bookData?.categories.toString()}",
+        style = MaterialTheme.typography.subtitle1
+    )
+    Text(
+        text = "Published: ${bookData?.publishedDate.toString()}",
+        style = MaterialTheme.typography.subtitle1
+    )
+
+    Spacer(modifier = Modifier.height(5.dp))
+
 }

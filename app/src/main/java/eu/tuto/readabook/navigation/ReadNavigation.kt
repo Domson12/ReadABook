@@ -2,9 +2,11 @@ package eu.tuto.readabook.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import eu.tuto.readabook.screens.CreateAccount.CreateAccount
 import eu.tuto.readabook.screens.Home.HomeScreen
 import eu.tuto.readabook.screens.SplashScreen
@@ -34,8 +36,14 @@ fun ReadNavigation() {
             SearchScreen(navController = navController, viewModel = viewModel)
         }
         //DetailScreen
-        composable(route = ReadScreens.DetailScreen.name) {
-            BookDetailsScreen(navController = navController, bookId = "")
+        val detailName = ReadScreens.DetailScreen.name
+
+        composable("$detailName/{bookId}", arguments = listOf(navArgument("bookId") {
+            type = NavType.StringType
+        })) { backStackEntry ->
+            backStackEntry.arguments?.getString("bookId").let {
+                BookDetailsScreen(navController = navController, bookId = it.toString())
+            }
         }
         //StatsScreen
         composable(route = ReadScreens.StatsScreen.name) {

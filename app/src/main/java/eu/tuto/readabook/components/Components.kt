@@ -380,3 +380,14 @@ fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (Stri
 fun ReadingNowArea(books: List<MBook>, navController: NavController) {
     ListCard()
 }
+
+@Composable
+fun LoadingIndicator(text: String) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        Text(text = text)
+    }
+}
