@@ -84,7 +84,7 @@ class LoginScreenViewModel : ViewModel() {
         val userId = auth.currentUser?.uid
         val user = MUser(
             id = null,
-            userid = userId.toString(),
+            userId = userId.toString(),
             displayName = displayName.toString(),
             avatarUrl = "",
             quote = "Life is great",

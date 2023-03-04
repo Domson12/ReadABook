@@ -1,6 +1,7 @@
 package eu.tuto.readabook.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,6 +11,7 @@ import eu.tuto.readabook.screens.SplashScreen
 import eu.tuto.readabook.screens.details.BookDetailsScreen
 import eu.tuto.readabook.screens.login.LoginScreen
 import eu.tuto.readabook.screens.search.SearchScreen
+import eu.tuto.readabook.screens.search.SearchViewModel
 import eu.tuto.readabook.screens.stats.StatsScreen
 import eu.tuto.readabook.screens.update.UpdateScreen
 
@@ -28,7 +30,8 @@ fun ReadNavigation() {
         }
         //SearchScreen
         composable(route = ReadScreens.SearchScreen.name) {
-            SearchScreen(navController = navController)
+            val viewModel = hiltViewModel<SearchViewModel>()
+            SearchScreen(navController = navController, viewModel = viewModel)
         }
         //DetailScreen
         composable(route = ReadScreens.DetailScreen.name) {

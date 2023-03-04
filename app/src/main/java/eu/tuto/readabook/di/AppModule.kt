@@ -1,12 +1,13 @@
 package eu.tuto.readabook.di
 
+
+import eu.tuto.readabook.network.BooksApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import eu.tuto.readabook.network.BooksApi
 import eu.tuto.readabook.repository.BookRepository
-import eu.tuto.readabook.utils.Constants.BASE_URL
+import eu.tuto.readabook.utils.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -24,7 +25,7 @@ object AppModule {
     @Provides
     fun provideBookApi(): BooksApi {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(BooksApi::class.java)

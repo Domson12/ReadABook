@@ -1,9 +1,6 @@
-package eu.tuto.readabook.model
-
-
-import com.google.gson.annotations.SerializedName
+package com.bawp.freader.model
 
 data class Epub(
-    @SerializedName("isAvailable")
+    val acsTokenLink: String,
     val isAvailable: Boolean
 )

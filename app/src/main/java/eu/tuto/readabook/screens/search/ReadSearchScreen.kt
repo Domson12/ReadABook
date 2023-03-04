@@ -1,5 +1,3 @@
-@file:Suppress("UNREACHABLE_CODE")
-
 package eu.tuto.readabook.screens.search
 
 import android.annotation.SuppressLint
@@ -21,20 +19,26 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import eu.tuto.readabook.components.InputField
 import eu.tuto.readabook.components.ReaderAppBar
-import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import eu.tuto.readabook.model.Item
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    navController: NavController,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+
     Scaffold(topBar = {
         ReaderAppBar(
             title = "Search Books",
@@ -42,86 +46,66 @@ fun SearchScreen(navController: NavController, viewModel: SearchViewModel = hilt
             navController = navController,
             showProfile = false
         ) {
+            //navController.popBackStack()
             navController.navigate(ReadScreens.HomeScreen.name)
         }
     }) {
-        Surface {
-            Column() {
-                Row() {
-                    SearchForm(
-                        navController = navController, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        viewModel = viewModel
-                    ) { query ->
-                        viewModel.searchBooks(query)
-                    }
+        Surface() {
+            Column {
+                SearchForm(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) { searchQuery ->
+                    viewModel.loadBooks(query = searchQuery)
+
                 }
-                Spacer(modifier = Modifier.height(30.dp))
-                Row() {
-                    BookList(navController = navController)
-                }
+                Spacer(modifier = Modifier.height(13.dp))
+                BookList(navController = navController)
+
+            }
+
+
+        }
+    }
+
+}
+
+@Composable
+fun BookList(
+    navController: NavController,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+
+
+    val listOfBooks = viewModel.list
+    if (viewModel.isLoading) {
+        Row(
+            modifier = Modifier.padding(end = 2.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LinearProgressIndicator()
+            Text(text = "Loading...")
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(items = listOfBooks) { book ->
+                BookRow(book, navController)
+
             }
         }
     }
-
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchForm(
-    modifier: Modifier = Modifier,
-    viewModel: SearchViewModel,
-    loading: Boolean = false,
-    hint: String = "Search",
-    navController: NavController,
-    onSearch: (String) -> Unit = {}
+fun BookRow(
+    book: Item,
+    navController: NavController
 ) {
-    Column {
-        val searchQueryState = rememberSaveable { mutableStateOf("") }
-        val keyboardController = LocalSoftwareKeyboardController.current
-        val valid = remember(searchQueryState.value) {
-            searchQueryState.value.trim().isNotEmpty()
-        }
-
-        InputField(valueState = searchQueryState,
-            labelId = "search",
-            enabled = true,
-            onAction = KeyboardActions {
-                if (!valid) {
-                    return@KeyboardActions
-                    onSearch(searchQueryState.value.trim())
-                    searchQueryState.value = ""
-                    keyboardController?.hide()
-                }
-            })
-
-        Spacer(modifier = Modifier.height(13.dp))
-        BookList(navController = navController)
-        LazyColumn(content = {
-
-        })
-    }
-}
-
-@Composable
-fun BookList(navController: NavController) {
-    val listOfBooks = listOf(
-        MBook(id = "da", title = "Hello", authors = "all2", notes = "none"),
-        MBook(id = "da", title = "Hello2", authors = "all1", notes = "none"),
-        MBook(id = "da", title = "Hello1", authors = "al1l", notes = "none"),
-        MBook(id = "da", title = "Hello4", authors = "all1", notes = "none")
-    )
-
-    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)) {
-        items(items = listOfBooks) { book ->
-            BookRow(book, navController)
-        }
-    }
-}
-
-@Composable
-fun BookRow(book: MBook, navController: NavController) {
     Card(modifier = Modifier
         .clickable { }
         .fillMaxWidth()
@@ -129,25 +113,76 @@ fun BookRow(book: MBook, navController: NavController) {
         .padding(3.dp),
         shape = RectangleShape,
         elevation = 7.dp) {
-        Row(modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.Top) {
+        Row(
+            modifier = Modifier.padding(5.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            val image =  "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=80&q=80"
             val imageUrl =
-                "http://books.google.pl/books?id=pY-goAEACAAJ&dq=android&hl=&cd=1&source=gbs_api"
+                book.volumeInfo.imageLinks.smallThumbnail.ifEmpty {
+                    image
+                }
             Image(
-                painter = rememberImagePainter(data = imageUrl), contentDescription = "book image",
+                painter = rememberAsyncImagePainter(model = imageUrl),
+                contentDescription = "book image",
                 modifier = Modifier
                     .width(80.dp)
                     .fillMaxHeight()
-                    .padding(4.dp)
+                    .padding(end = 4.dp),
             )
+
             Column {
-                Text(text = book.title.toString(), overflow = TextOverflow.Ellipsis)
+                Text(text = book.volumeInfo.title, overflow = TextOverflow.Ellipsis)
                 Text(
-                    text = "Author: ${book.authors}",
+                    text = "Author: ${book.volumeInfo.authors}",
                     overflow = TextOverflow.Clip,
+                    fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.caption
                 )
-                //TODO: Add more fields later
+
+                Text(
+                    text = "Date: ${book.volumeInfo.publishedDate}",
+                    overflow = TextOverflow.Clip,
+                    fontStyle = FontStyle.Italic,
+                    style = MaterialTheme.typography.caption
+                )
+
+                Text(
+                    text = "${book.volumeInfo.categories}",
+                    overflow = TextOverflow.Clip,
+                    fontStyle = FontStyle.Italic,
+                    style = MaterialTheme.typography.caption
+                )
             }
         }
+    }
+}
+
+
+@ExperimentalComposeUiApi
+@Composable
+fun SearchForm(
+    modifier: Modifier = Modifier,
+    loading: Boolean = false,
+    hint: String = "Search",
+    onSearch: (String) -> Unit = {}
+) {
+    Column {
+        val searchQueryState = rememberSaveable { mutableStateOf("") }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val valid = remember(searchQueryState.value) {
+            searchQueryState.value.trim().isNotEmpty()
+
+        }
+
+        InputField(valueState = searchQueryState,
+            labelId = "Search",
+            enabled = true,
+            onAction = KeyboardActions {
+                if (!valid) return@KeyboardActions
+                onSearch(searchQueryState.value.trim())
+                searchQueryState.value = ""
+                keyboardController?.hide()
+            })
     }
 }
