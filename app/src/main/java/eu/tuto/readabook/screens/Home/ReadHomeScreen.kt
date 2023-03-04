@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import eu.tuto.readabook.components.*
-import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -39,13 +38,7 @@ fun HomeScreen(navController: NavHostController) {
 
 @Composable
 fun HomeContent(navController: NavController) {
-    val listOfBooks = listOf(
-        MBook(id = "da", title = "Hello", authors = "all2", notes = "none"),
-        MBook(id = "da", title = "Hello2", authors = "all1", notes = "none"),
-        MBook(id = "da", title = "Hello1", authors = "al1l", notes = "none"),
-        MBook(id = "da", title = "Hello4", authors = "all1", notes = "none"),
 
-    )
     val email = FirebaseAuth.getInstance().currentUser?.email
     val currentUserName = if (!email.isNullOrEmpty()) {
         FirebaseAuth.getInstance().currentUser?.email?.split("@")?.get(0)
@@ -86,7 +79,7 @@ fun HomeContent(navController: NavController) {
 
         TitleSection(label = "Reading List")
 
-        BookListArea(listOfBooks = emptyList<MBook>(), navController = navController)
+        BookListArea(listOfBooks = emptyList(), navController = navController)
     }
 }
 

@@ -35,7 +35,7 @@ fun ReadNavigation() {
         }
         //DetailScreen
         composable(route = ReadScreens.DetailScreen.name) {
-            BookDetailsScreen(navController = navController)
+            BookDetailsScreen(navController = navController, bookId = "")
         }
         //StatsScreen
         composable(route = ReadScreens.StatsScreen.name) {

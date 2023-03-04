@@ -1,7 +1,6 @@
 package eu.tuto.readabook.screens.search
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,12 +22,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
 import eu.tuto.readabook.components.InputField
 import eu.tuto.readabook.components.ReaderAppBar
 import eu.tuto.readabook.navigation.ReadScreens
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import eu.tuto.readabook.model.Item
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -38,7 +36,6 @@ fun SearchScreen(
     navController: NavController,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-
     Scaffold(topBar = {
         ReaderAppBar(
             title = "Search Books",
@@ -103,11 +100,13 @@ fun BookList(
 
 @Composable
 fun BookRow(
-    book: Item,
+    book: Item?,
     navController: NavController
 ) {
     Card(modifier = Modifier
-        .clickable { }
+        .clickable {
+            navController.navigate(ReadScreens.DetailScreen.name)
+        }
         .fillMaxWidth()
         .height(100.dp)
         .padding(3.dp),
@@ -117,38 +116,35 @@ fun BookRow(
             modifier = Modifier.padding(5.dp),
             verticalAlignment = Alignment.Top
         ) {
-            val image =  "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=80&q=80"
-            val imageUrl =
-                book.volumeInfo.imageLinks.smallThumbnail.ifEmpty {
-                    image
+            val imageUrl: String? =
+                book?.volumeInfo?.imageLinks?.smallThumbnail?.ifEmpty {
+                    "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=80&q=80"
                 }
-            Image(
-                painter = rememberAsyncImagePainter(model = imageUrl),
-                contentDescription = "book image",
+            AsyncImage(
+                model = imageUrl, contentDescription = "Book Image",
                 modifier = Modifier
                     .width(80.dp)
                     .fillMaxHeight()
-                    .padding(end = 4.dp),
+                    .padding(end = 4.dp)
             )
-
             Column {
-                Text(text = book.volumeInfo.title, overflow = TextOverflow.Ellipsis)
+                book?.volumeInfo?.title?.let { Text(text = it, overflow = TextOverflow.Ellipsis) }
                 Text(
-                    text = "Author: ${book.volumeInfo.authors}",
+                    text = "Author: ${book?.volumeInfo?.authors}",
                     overflow = TextOverflow.Clip,
                     fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.caption
                 )
 
                 Text(
-                    text = "Date: ${book.volumeInfo.publishedDate}",
+                    text = "Date: ${book?.volumeInfo?.publishedDate}",
                     overflow = TextOverflow.Clip,
                     fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.caption
                 )
 
                 Text(
-                    text = "${book.volumeInfo.categories}",
+                    text = "${book?.volumeInfo?.categories}",
                     overflow = TextOverflow.Clip,
                     fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.caption

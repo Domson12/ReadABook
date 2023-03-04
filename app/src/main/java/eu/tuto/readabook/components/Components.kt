@@ -1,6 +1,5 @@
 package eu.tuto.readabook.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -32,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
@@ -183,13 +182,13 @@ fun ListCard(
             horizontalAlignment = Alignment.Start
         ) {
             Row(horizontalArrangement = Arrangement.Center) {
-                Image(
-                    painter = rememberImagePainter(data = ""), contentDescription = "book image",
-                    modifier = Modifier
+                AsyncImage(
+                    model = "", contentDescription = "book image", modifier = Modifier
                         .height(140.dp)
                         .width(100.dp)
                         .padding(4.dp)
                 )
+
                 Spacer(modifier = Modifier.width(50.dp))
                 Column(
                     modifier = Modifier.padding(top = 25.dp),

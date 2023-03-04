@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-
     //firebase
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
 
@@ -87,7 +86,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
 
     //OkHttp3
-    implementation "com.squareup.okhttp3:okhttp:4.10.0"
+    implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
 
     //Retrofit - JSON Converter
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
@@ -100,6 +99,9 @@ dependencies {
 
     //Retrofit
     implementation "com.squareup.retrofit2:converter-gson"
+
+    //Timber
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
