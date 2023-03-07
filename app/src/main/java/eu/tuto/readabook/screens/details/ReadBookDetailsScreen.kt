@@ -20,11 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import eu.tuto.readabook.components.LoadingIndicator
 import eu.tuto.readabook.components.ReaderAppBar
 import eu.tuto.readabook.components.RoundedButton
 import eu.tuto.readabook.data.Resource
@@ -36,10 +34,11 @@ import timber.log.Timber
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun BookDetailsScreen(
-    navController: NavHostController,
+    navController: NavController,
     bookId: String,
     viewModel: DetailsViewModel = hiltViewModel()
 ) {
+
     Scaffold(topBar = {
         ReaderAppBar(
             title = "Book Details",
@@ -50,6 +49,7 @@ fun BookDetailsScreen(
             navController.navigate(ReadScreens.SearchScreen.name)
         }
     }) {
+
         Surface(
             modifier = Modifier
                 .padding(3.dp)
@@ -60,12 +60,17 @@ fun BookDetailsScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 val bookInfo = produceState<Resource<Item>>(initialValue = Resource.Loading()) {
                     value = viewModel.getBookInfo(bookId)
                 }.value
 
                 if (bookInfo.data == null) {
-                    LoadingIndicator(text = "Loading...")
+                    Row() {
+                        LinearProgressIndicator()
+                        Text(text = "Loading...")
+                    }
+
                 } else {
                     ShowBookDetails(bookInfo, navController)
                 }
@@ -75,30 +80,32 @@ fun BookDetailsScreen(
 }
 
 @Composable
-fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavHostController) {
+fun ShowBookDetails(
+    bookInfo: Resource<Item>,
+    navController: NavController
+) {
     val bookData = bookInfo.data?.volumeInfo
     val googleBookId = bookInfo.data?.id
+
 
     Card(
         modifier = Modifier.padding(34.dp),
         shape = CircleShape, elevation = 4.dp
     ) {
-        AsyncImage(
-            model = bookData!!.imageLinks.thumbnail, contentDescription = "Book Image",
-            modifier = Modifier
-                .width(90.dp)
-                .height(90.dp)
-                .padding(1.dp)
-        )
+        AsyncImage(model = bookData!!.imageLinks.thumbnail, contentDescription = "",
+        modifier = Modifier
+            .width(90.dp)
+            .height(90.dp)
+            .padding(1.dp))
     }
-    bookData?.title?.let {
-        Text(
-            text = it,
-            style = MaterialTheme.typography.h6,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 19
-        )
-    }
+
+    Text(
+        text = bookData?.title.toString(),
+        style = MaterialTheme.typography.h6,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 19
+    )
+
     Text(text = "Authors: ${bookData?.authors.toString()}")
     Text(text = "Page Count: ${bookData?.pageCount.toString()}")
     Text(
@@ -118,7 +125,6 @@ fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavHostController) 
         bookData!!.description,
         HtmlCompat.FROM_HTML_MODE_LEGACY
     ).toString()
-
     val localDims = LocalContext.current.resources.displayMetrics
     Surface(
         modifier = Modifier
@@ -127,15 +133,23 @@ fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavHostController) 
         shape = RectangleShape,
         border = BorderStroke(1.dp, Color.DarkGray)
     ) {
+
         LazyColumn(modifier = Modifier.padding(3.dp)) {
             item {
+
                 Text(text = cleanDescription)
             }
+
         }
     }
+
     //Buttons
-    Row(modifier = Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.SpaceAround) {
+    Row(
+        modifier = Modifier.padding(top = 6.dp),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
         RoundedButton(label = "Save", radius = 29) {
+            //save this book to the firestore database
             val book = MBook(
                 title = bookData.title,
                 authors = bookData.authors.toString(),
@@ -149,29 +163,42 @@ fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavHostController) 
                 googleBookId = googleBookId,
                 userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
             )
-            saveToFirebase(book = book, navController = navController)
+
+            saveToFirebase(book, navController = navController)
+
         }
         Spacer(modifier = Modifier.width(25.dp))
         RoundedButton(label = "Cancel", radius = 29) {
             navController.popBackStack()
         }
+
     }
 }
 
 fun saveToFirebase(book: MBook, navController: NavController) {
     val db = FirebaseFirestore.getInstance()
-    val databaseCollection = db.collection("books")
+    val dbCollection = db.collection("books")
+
     if (book.toString().isNotEmpty()) {
-        databaseCollection.add(book)
+        dbCollection.add(book)
             .addOnSuccessListener { docRef ->
                 val docId = docRef.id
-                databaseCollection.document(docId)
+                dbCollection.document(docId)
                     .update(hashMapOf("id" to docId) as Map<String, Any>)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             navController.popBackStack()
                         }
-                    }.addOnFailureListener { Timber.d("Error") }
+
+
+                    }.addOnFailureListener {
+                        Timber.tag("Error").w(it, "SaveToFirebase:  Error updating doc")
+                        Timber.tag("FB").w(it, "Error: $db")
+                    }
+
             }
+
+
+    } else {
     }
 }

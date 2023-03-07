@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import eu.tuto.readabook.model.MUser
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LoginScreenViewModel : ViewModel() {
     //val loadingState = MutableStateFlow(LoadingState.IDLE)
@@ -32,7 +33,7 @@ class LoginScreenViewModel : ViewModel() {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Log.d("FB", "signInWithEmailAndPassword: ${task.result}")
+                            Timber.tag("FB").d("signInWithEmailAndPassword: %s", task.result)
                             home()
                         } else {
                             Toast.makeText(
@@ -43,7 +44,7 @@ class LoginScreenViewModel : ViewModel() {
                         }
                     }
             } catch (e: Exception) {
-                Log.d("FB", "signInWithEmailAndPassword: ${e.message}")
+                Timber.tag("FB").d("signInWithEmailAndPassword: %s", e.message)
             }
         }
 
@@ -64,7 +65,7 @@ class LoginScreenViewModel : ViewModel() {
                         val displayName = task.result?.user?.email?.split('@')?.get(0)
                         createUser(displayName)
                         home()
-                        Log.d("FB", "createUserWithEmailAndPassword: ${task.result}")
+                        Timber.tag("FB").d("createUserWithEmailAndPassword: %s", task.result)
                     } else {
                         Toast.makeText(
                             context,

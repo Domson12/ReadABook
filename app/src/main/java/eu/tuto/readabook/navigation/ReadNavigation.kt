@@ -9,9 +9,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import eu.tuto.readabook.screens.CreateAccount.CreateAccount
 import eu.tuto.readabook.screens.Home.HomeScreen
+import eu.tuto.readabook.screens.Home.HomeViewModel
 import eu.tuto.readabook.screens.SplashScreen
 import eu.tuto.readabook.screens.details.BookDetailsScreen
 import eu.tuto.readabook.screens.login.LoginScreen
+
 import eu.tuto.readabook.screens.search.SearchScreen
 import eu.tuto.readabook.screens.search.SearchViewModel
 import eu.tuto.readabook.screens.stats.StatsScreen
@@ -28,7 +30,8 @@ fun ReadNavigation() {
         }
         //HomeScreen
         composable(route = ReadScreens.HomeScreen.name) {
-            HomeScreen(navController = navController)
+            val viewModel = hiltViewModel<HomeViewModel>()
+            HomeScreen(navController = navController, viewModel = viewModel)
         }
         //SearchScreen
         composable(route = ReadScreens.SearchScreen.name) {

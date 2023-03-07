@@ -156,7 +156,7 @@ fun TitleSection(modifier: Modifier = Modifier, label: String) {
 
 @Composable
 fun ListCard(
-    book: MBook = MBook("d", "Running", "Me", "hello world"),
+    book: MBook,
     onPressDetails: (String) -> Unit = {}
 ) {
 
@@ -183,7 +183,9 @@ fun ListCard(
         ) {
             Row(horizontalArrangement = Arrangement.Center) {
                 AsyncImage(
-                    model = "", contentDescription = "book image", modifier = Modifier
+                    model = book.photoUrl.toString(),
+                    contentDescription = "book image",
+                    modifier = Modifier
                         .height(140.dp)
                         .width(100.dp)
                         .padding(4.dp)
@@ -378,7 +380,9 @@ fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (Stri
 
 @Composable
 fun ReadingNowArea(books: List<MBook>, navController: NavController) {
-    ListCard()
+    HorizontalScrollableComponent(listOfBooks = books, onCardPressed = {
+        navController.navigate(ReadScreens.UpdateScreen.name + "/$it")
+    })
 }
 
 @Composable
