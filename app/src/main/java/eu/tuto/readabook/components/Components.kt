@@ -30,11 +30,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
+import eu.tuto.readabook.screens.Home.HomeViewModel
 
 
 @Composable
@@ -354,35 +356,55 @@ fun RoundedButton(label: String, radius: Int, onPress: () -> Unit) {
 }
 
 @Composable
-fun BookListArea(listOfBooks: List<MBook>, navController: NavController) {
-    HorizontalScrollableComponent(listOfBooks) {
-        //TODO: on card clicked go to details
+fun BookListArea(
+    listOfBooks: List<MBook>,
+    navController: NavController
+) {
+    val addedBooks = listOfBooks.filter { mBook ->
+        mBook.startedReading == null && mBook.finishedReading == null
+    }
+    HorizontalScrollableComponent(addedBooks) {
+        navController.navigate(ReadScreens.UpdateScreen.name + "/$it")
+
     }
 }
 
 @Composable
-fun HorizontalScrollableComponent(listOfBooks: List<MBook>, onCardPressed: (String) -> Unit) {
+fun HorizontalScrollableComponent(
+    listOfBooks: List<MBook>,
+    viewModel: HomeViewModel = hiltViewModel(),
+    onCardPressed: (String) -> Unit
+) {
     val scrollState = rememberScrollState()
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(280.dp)
-            .horizontalScroll(scrollState)
-    ) {
+    if (listOfBooks.isEmpty()) {
+        Surface(modifier = Modifier.padding(23.dp)) {
+            Text(
+                text = "No books found.", style = TextStyle(
+                    color = Color.Red.copy(0.4f),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            )
+
+        }
+    } else {
         for (book in listOfBooks) {
             ListCard(book) {
-                onCardPressed(it)
+                onCardPressed(book.googleBookId.toString())
             }
         }
     }
 }
 
 @Composable
-fun ReadingNowArea(books: List<MBook>, navController: NavController) {
-    HorizontalScrollableComponent(listOfBooks = books, onCardPressed = {
+fun ReadingNowArea(listOfBooks: List<MBook>, navController: NavController) {
+   val readingNowList = listOfBooks.filter { mBook ->
+        mBook.startedReading != null && mBook.finishedReading == null
+   }
+    HorizontalScrollableComponent(readingNowList){
         navController.navigate(ReadScreens.UpdateScreen.name + "/$it")
-    })
+    }
 }
 
 @Composable

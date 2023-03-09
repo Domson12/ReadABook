@@ -53,8 +53,13 @@ fun ReadNavigation() {
             StatsScreen(navController = navController)
         }
         //UpdateScreen
-        composable(route = ReadScreens.UpdateScreen.name) {
-            UpdateScreen(navController = navController)
+        val updateName = ReadScreens.UpdateScreen.name
+        composable("$updateName/{bookItemId}", arguments = listOf(navArgument("bookItemId") {
+            type = NavType.StringType
+        })) { navBackStackEntry ->
+            navBackStackEntry.arguments?.getString("bookItemId").let { 
+                UpdateScreen(navController = navController, bookItemId = it.toString())
+            }
         }
         //LoginScreen
         composable(route = ReadScreens.LoginScreen.name) {
