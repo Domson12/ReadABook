@@ -1,5 +1,6 @@
 package eu.tuto.readabook.screens.Home
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,12 +16,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: FireRepository) : ViewModel() {
-    val data: MutableState<DataOrException<List<MBook>, Boolean, Exception>> = mutableStateOf(
-        DataOrException(
-            listOf(), true, Exception("")
-        )
-    )
+class HomeViewModel @Inject constructor(
+    private val repository: FireRepository): ViewModel() {
+    val data: MutableState<DataOrException<List<MBook>, Boolean, Exception>>
+            = mutableStateOf(DataOrException(listOf(), true,Exception("")))
 
     init {
         getAllBooksFromDatabase()
@@ -30,10 +29,9 @@ class HomeViewModel @Inject constructor(private val repository: FireRepository) 
         viewModelScope.launch {
             data.value.loading = true
             data.value = repository.getAllBooksFromDatabase()
-            if (!data.value.data.isNullOrEmpty()) {
-                data.value.loading = false
-            }
-            Timber.tag("TAG").d("getAllBooks: ${data.value.data?.toList().toString()}")
+            if (!data.value.data.isNullOrEmpty()) data.value.loading = false
         }
+        Timber.tag("GETERRORMESS").d("getAllBooksFromDatabase: %s", data.value.data?.toList().toString())
+
     }
 }

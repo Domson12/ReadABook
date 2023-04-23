@@ -44,10 +44,7 @@ fun HomeScreen(
             HomeContent(navController, viewModel)
 
         }
-
     }
-
-
 }
 
 @Composable
@@ -96,8 +93,6 @@ fun HomeContent(navController: NavController, viewModel: HomeViewModel) {
                 )
                 Divider()
             }
-
-
         }
 
         ReadingNowArea(

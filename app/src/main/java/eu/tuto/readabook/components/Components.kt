@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.api.Distribution.BucketOptions.Linear
 import com.google.firebase.auth.FirebaseAuth
 import eu.tuto.readabook.model.MBook
 import eu.tuto.readabook.navigation.ReadScreens
@@ -365,7 +366,6 @@ fun BookListArea(
     }
     HorizontalScrollableComponent(addedBooks) {
         navController.navigate(ReadScreens.UpdateScreen.name + "/$it")
-
     }
 }
 
@@ -376,22 +376,29 @@ fun HorizontalScrollableComponent(
     onCardPressed: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
-
-    if (listOfBooks.isEmpty()) {
-        Surface(modifier = Modifier.padding(23.dp)) {
-            Text(
-                text = "No books found.", style = TextStyle(
-                    color = Color.Red.copy(0.4f),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
-            )
-
-        }
-    } else {
-        for (book in listOfBooks) {
-            ListCard(book) {
-                onCardPressed(book.googleBookId.toString())
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(200.dp)
+        .horizontalScroll(scrollState)){
+        if (viewModel.data.value.loading == true){
+            LinearProgressIndicator()
+        } else {
+            if (listOfBooks.isEmpty()){
+                Surface(modifier = Modifier.padding(23.dp)) {
+                    Text(text = "No books found. Add a Book",
+                        style = TextStyle(
+                            color = Color.Red.copy(alpha = 0.4f),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    )
+                }
+            } else {
+                for (book in listOfBooks) {
+                    ListCard(book) {
+                        onCardPressed(book.googleBookId.toString())
+                    }
+                }
             }
         }
     }
